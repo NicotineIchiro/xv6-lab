@@ -1,0 +1,4 @@
+If the log in printf doesn't normally print,
+and the fd about stdio has been closed, 
+think about the log was piped to other position,
+instead of the program doesn't work well.
