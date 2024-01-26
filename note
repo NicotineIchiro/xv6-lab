@@ -2,3 +2,19 @@ If the log in printf doesn't normally print,
 and the fd about stdio has been closed, 
 think about the log was piped to other position,
 instead of the program doesn't work well.
+
+Actually, most of the containter sholuld be
+declare static due to the so tiny stack of xv6
+and the confusing bug it corrupted.
+
+The user shell of xv6 is some diff from the modern one,just copy and delete middle char would cause some bug.
+
+The behavior of read from closed pipe ?
+NOTICE: Parent and child both have fd point to the same pipe-end, so
+	if want to thoroughly close a pipe-end, ensure the fd in ALL process is closed.
+
+
+Static UNIX pipe buffered the output of pipe.
+
+
+Xv6's pipe's kernel buffer looks like a ring queue.

@@ -22,4 +22,7 @@ submissions/
 ph
 barrier
 /lab-*.json
+.cache/
+compile_commands.json
 .DS_Store
+tags

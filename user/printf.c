@@ -53,7 +53,7 @@ vprintf(int fd, const char *fmt, va_list ap)
 {
   char *s;
   int c, i, state;
-
+//va list can be passed inter-function, but should be inited in caller.
   state = 0;
   for(i = 0; fmt[i]; i++){
     c = fmt[i] & 0xff;

@@ -9,7 +9,7 @@
 #include "kernel/fs.h"
 #include "kernel/fcntl.h"
 #include "kernel/param.h"
-//char subcmd[128] = "/";
+
 char ** fork_argv;
 void xargs(int sub_argc, char ** sub_argv)
 {
@@ -18,27 +18,18 @@ void xargs(int sub_argc, char ** sub_argv)
 	int pid = fork();
 
 	if (pid == 0) {
-		//`char * fork_argv[fork_argc];
 		fork_argv = (char **)malloc(sub_argc * sizeof(char *));
 		for (int i = 0; i < sub_argc; ++i)
 		{
 			fork_argv[i] = (char *)malloc(strlen(sub_argv[i]  + 1));
-			//fork_argv[i] = sub_argv[i];
 			memmove(fork_argv[i], sub_argv[i], strlen(sub_argv[i]));
 
 		  fork_argv[i][strlen(sub_argv[i])] = '\0';	
-			//printf("fork: %d: %s\n", i, fork_argv[i]);
 		}
-		//memmove(subcmd + strlen(subcmd), fork_argv[0], strlen(fork_argv[0]));	
-		//printf("%s\n", subcmd);
-
-		//the exec argv size shold be same to argc.
-		//exec(subcmd, fork_argv);
 		exec(fork_argv[0], fork_argv);
-		//printf("xargs: exec error\n");
+		printf("xargs: exec error\n");
 	} else if (pid > 0) {
 		wait((int *) 0);
-		//printf("child finish\n");
 	} else {
 		fprintf(2, "xargs: fork error\n");
 	}
@@ -67,24 +58,18 @@ int main(int argc, char * argv[])
 
 	//inital subargc is argc - 1
 	for (int i = 1; i < argc; ++i) {
-		 //subargv[i - 1] = argv[i];
 		memmove(subargv[i - 1], argv[i], strlen(argv[i]));
-	//	printf("main: %d: %s\n", i, argv[i]);
 	}
 	
 	for (int i = 0,l = 0; read(0, &ch, 1) == 1 && i < 512; ++i) {
-		//printf("ch: %c ", ch);
 		if (ch != '\n' && ch != '\0') {
 			buf[i] = ch;
 		} else {
 			buf[i] = '\0';
 			// exec the sub-cmd.
-			//printf("buf[%d]: %s\n", l, buf + l);	
 			//have no enougn space then trap?
 			memmove(subargv[argc - 1], buf + l, strlen(buf + l));
 			subargv[argc - 1][strlen(buf + l)] = '\0';
-			//subargv[argc] = buf + l;
-			//printf("subargv[%d]: %s\n", argc - 1, subargv[argc - 1]);
 			xargs(argc, subargv);
 			l = i + 1;
 		} 
