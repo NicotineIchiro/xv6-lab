@@ -19,7 +19,7 @@ void prime_pipeline(int * p, int N) {
 	
 	printf("prime %d\n", head);
 	int right_max = head;
-	if (head >= N) return;
+	if (head == N) return;
 	while (temp < N) {// what to do if N is not prime?
 		read(p[0], &temp, 4);
 		//printf("get temp %d\n", temp);

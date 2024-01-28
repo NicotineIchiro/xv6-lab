@@ -18,10 +18,10 @@ void xargs(int sub_argc, char ** sub_argv)
 	int pid = fork();
 
 	if (pid == 0) {
-		fork_argv = (char **)malloc(sub_argc * sizeof(char *));
+		fork_argv = (char **)malloc((sub_argc) * sizeof(char *));
 		for (int i = 0; i < sub_argc; ++i)
 		{
-			fork_argv[i] = (char *)malloc(strlen(sub_argv[i]  + 1));
+			fork_argv[i] = (char *)malloc(strlen(sub_argv[i]));
 			memmove(fork_argv[i], sub_argv[i], strlen(sub_argv[i]));
 
 		  fork_argv[i][strlen(sub_argv[i])] = '\0';	
@@ -36,17 +36,17 @@ void xargs(int sub_argc, char ** sub_argv)
 	
 	return;
 }
-char buf[512];
-
 char * subargv[MAXARG];
+char buf[512];
 int main(int argc, char * argv[])
 {
+
 	if (argc < 2) {
 		printf("Usage: cmd1 [optional-args1] | xargs cmd2 [optional-args2]\n");
 		exit(0);
 	}
 	if (argc > 31) {
-		printf("xrags: exceed argc limit.\n");
+		printf("xargs: exceed argc limit.\n");
 		exit(0);
 	}
 	char ch;

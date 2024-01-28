@@ -193,7 +193,6 @@ UPROGS=\
 	$U/_find\
   $U/_xargs\
 	$U/_primes\
-	$U/_testfork\
 
 ifeq ($(LAB),$(filter $(LAB), lock))
 UPROGS += \
