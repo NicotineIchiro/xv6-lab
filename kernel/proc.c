@@ -322,6 +322,8 @@ fork(void)
   np->state = RUNNABLE;
   release(&np->lock);
 
+	np->strace_mask = p->strace_mask;
+
   return pid;
 }
 
@@ -686,3 +688,14 @@ procdump(void)
     printf("\n");
   }
 }
+
+
+//mannual add syscall
+int
+trace(int mask)
+{
+	if (mask <= 0) return -1;
+	myproc()->strace_mask = mask;
+	return 0;
+}
+
