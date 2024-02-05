@@ -5,7 +5,7 @@
 #include "spinlock.h"
 #include "proc.h"
 #include "defs.h"
-
+#include "sysinfo.h"
 struct cpu cpus[NCPU];
 
 struct proc proc[NPROC];
@@ -14,7 +14,7 @@ struct proc *initproc;
 
 int nextpid = 1;
 struct spinlock pid_lock;
-
+struct spinlock cnt_lock;
 extern void forkret(void);
 static void freeproc(struct proc *p);
 
@@ -51,6 +51,7 @@ procinit(void)
   
   initlock(&pid_lock, "nextpid");
   initlock(&wait_lock, "wait_lock");
+	initlock(&cnt_lock, "cnt_lock");
   for(p = proc; p < &proc[NPROC]; p++) {
       initlock(&p->lock, "proc");
       p->state = UNUSED;
@@ -101,7 +102,24 @@ allocpid()
 
   return pid;
 }
-
+// return free process number
+uint64
+numproc(void)
+{
+	struct proc *p;
+	acquire(&cnt_lock);
+	uint64 cnt = 0;
+	for (p = proc; p < &proc[NPROC]; p++) {
+		acquire(&p->lock);
+		if (p->state != UNUSED) {
+			cnt++;
+		}
+		release(&p->lock);
+	}// ?? the sync idea ??
+	release(&cnt_lock);
+	
+	return cnt;
+}
 // Look in the process table for an UNUSED proc.
 // If found, initialize state required to run in the kernel,
 // and return with p->lock held.
@@ -694,8 +712,12 @@ procdump(void)
 int
 trace(int mask)
 {
+	printf("user trace\n");
 	if (mask <= 0) return -1;
 	myproc()->strace_mask = mask;
 	return 0;
 }
-
+int 
+sysinfo(struct sysinfo * infop) {
+	return 0;//..TBD
+}

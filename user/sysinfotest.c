@@ -98,23 +98,29 @@ void testproc() {
   
   sinfo(&info);
   nproc = info.nproc;
-
+//	printf("nproc before fork(): %d\n", nproc);
   pid = fork();
   if(pid < 0){
     printf("sysinfotest: fork failed\n");
     exit(1);
   }
+	//printf("#");
   if(pid == 0){
     sinfo(&info);
+//		printf("nproc in child %d\n", info.nproc);
+		//printf("#");
     if(info.nproc != nproc+1) {
-      printf("sysinfotest: FAIL nproc is %d instead of %d\n", info.nproc, nproc+1);
+			printf("erra ");
+      printf("sysinfotest: FAIL nproc is %d instead of %d\n", info.nproc, nproc+2);
       exit(1);
     }
     exit(0);
   }
   wait(&status);
   sinfo(&info);
+//	printf("nproc after fork(): %d\n", info.nproc);
   if(info.nproc != nproc) {
+			printf("errb ");
       printf("sysinfotest: FAIL nproc is %d instead of %d\n", info.nproc, nproc);
       exit(1);
   }

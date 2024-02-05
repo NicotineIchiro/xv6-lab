@@ -8,7 +8,7 @@
 #include "spinlock.h"
 #include "riscv.h"
 #include "defs.h"
-
+//use page as count unit?
 void freerange(void *pa_start, void *pa_end);
 
 extern char end[]; // first address after kernel.
@@ -57,11 +57,27 @@ kfree(void *pa)
   r = (struct run*)pa;
 
   acquire(&kmem.lock);
-  r->next = kmem.freelist;
+  r->next = kmem.freelist; // head insert
   kmem.freelist = r;
   release(&kmem.lock);
 }
 
+uint64
+numfreemem(void)
+{
+	struct run *p;
+	uint64 cnt = 0;
+
+	acquire(&kmem.lock);
+	p	= kmem.freelist;
+	if (p) {
+		for (; p; p = p->next) {
+			cnt += 4096;
+		}			
+	}
+	release(&kmem.lock);
+	return cnt;
+}
 // Allocate one 4096-byte page of physical memory.
 // Returns a pointer that the kernel can use.
 // Returns 0 if the memory cannot be allocated.

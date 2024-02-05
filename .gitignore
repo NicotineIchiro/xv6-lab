@@ -24,4 +24,4 @@ barrier
 /lab-*.json
 .DS_Store
 *.swp
-./cache
+.cache/

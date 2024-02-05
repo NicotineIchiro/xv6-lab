@@ -27,7 +27,7 @@ argfd(int n, int *pfd, struct file **pf)
   argint(n, &fd);
   if(fd < 0 || fd >= NOFILE || (f=myproc()->ofile[fd]) == 0)
     return -1;
-  if(pfd)
+  if(pfd)// if don't want to storage, pass 0 to jump the if.
     *pfd = fd;
   if(pf)
     *pf = f;
