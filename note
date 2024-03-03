@@ -1,0 +1,10 @@
+gdb's bt can record the jump line in the source!
+good to C-c then bt when dead loop in somewhere.
+
+notion: the mappage() func just register the 
+memory mapping, without physical memory allocate.
+kalloc() before use it in kernel, 
+a RO page initialling can be implemented by 
+mapping an address of kernel variable as PA to
+the target VA, with the kervel variable initiallized 
+by some value.

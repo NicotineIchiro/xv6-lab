@@ -58,7 +58,7 @@ kfree(void *pa)
 
   acquire(&kmem.lock);
   r->next = kmem.freelist;
-  kmem.freelist = r;
+  kmem.freelist = r;   //head insert
   release(&kmem.lock);
 }
 

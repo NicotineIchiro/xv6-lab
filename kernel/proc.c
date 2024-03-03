@@ -125,6 +125,7 @@ found:
   p->pid = allocpid();
   p->state = USED;
 
+	// whether every physical page should manually alloc?
   // Allocate a trapframe page.
   if((p->trapframe = (struct trapframe *)kalloc()) == 0){
     freeproc(p);
@@ -132,6 +133,12 @@ found:
     return 0;
   }
 
+	if ((p->usysc = (struct usyscall *)kalloc()) == 0) {
+		freeproc(p);
+		release(&p->lock);
+		return 0;
+	}
+	p->usysc->pid = p->pid;
   // An empty user page table.
   p->pagetable = proc_pagetable(p);
   if(p->pagetable == 0){
@@ -140,6 +147,7 @@ found:
     return 0;
   }
 
+	
   // Set up new context to start executing at forkret,
   // which returns to user space.
   memset(&p->context, 0, sizeof(p->context));
@@ -158,6 +166,9 @@ freeproc(struct proc *p)
   if(p->trapframe)
     kfree((void*)p->trapframe);
   p->trapframe = 0;
+	if(p->usysc)
+		kfree((void *)p->usysc);
+	p->usysc = 0;
   if(p->pagetable)
     proc_freepagetable(p->pagetable, p->sz);
   p->pagetable = 0;
@@ -201,6 +212,15 @@ proc_pagetable(struct proc *p)
     uvmfree(pagetable, 0);
     return 0;
   }
+	
+
+
+	if (mappages(pagetable, USYSCALL, PGSIZE, (uint64)(p->usysc), PTE_R | PTE_U) < 0) {
+		//remember to unmap when normally free pt.
+		uvmunmap(pagetable, USYSCALL, 1, 0);
+		uvmfree(pagetable, 0);
+		return 0;
+	}
 
   return pagetable;
 }
@@ -212,6 +232,7 @@ proc_freepagetable(pagetable_t pagetable, uint64 sz)
 {
   uvmunmap(pagetable, TRAMPOLINE, 1, 0);
   uvmunmap(pagetable, TRAPFRAME, 1, 0);
+	uvmunmap(pagetable, USYSCALL, 1, 0);
   uvmfree(pagetable, sz);
 }
 
@@ -267,7 +288,7 @@ growproc(int n)
     if((sz = uvmalloc(p->pagetable, sz, sz + n, PTE_W)) == 0) {
       return -1;
     }
-  } else if(n < 0){
+  } else if(n < 0){ // shrink
     sz = uvmdealloc(p->pagetable, sz, sz + n);
   }
   p->sz = sz;
