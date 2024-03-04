@@ -1,1 +1,2 @@
-70
+fork, by using sharing page in new process alloc.
+
