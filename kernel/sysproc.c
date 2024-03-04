@@ -75,6 +75,32 @@ int
 sys_pgaccess(void)
 {
   // lab pgtbl: your code here.
+	//arg1: start va, arg2: npages, arg3: user bitmask buf
+#define MAXPN (2L << 9)
+
+	uint64 va, buf;
+	int npages;
+	argaddr(0, &va);
+	argint(1, &npages);
+	argaddr(2, &buf);
+		
+	if (npages >= MAXPN)
+		return -1;
+	
+	unsigned int kbm = 0; //kernel bit mask.
+	uint64 pa;
+	//vmprint(myproc()->pagetable);
+	for (int i = 0; i < npages; ++i) {
+		pa = (uint64)walk(myproc()->pagetable, va, 0);
+		if (*(uint64 *)pa & PTE_A) {
+			kbm |= (1 << i);
+			*(uint64 *)pa &= ~(PTE_A);	
+		}
+		va += PGSIZE;
+	}
+	//vmprint(myproc()->pagetable);
+	copyout(myproc()->pagetable, buf, (char *)&kbm, sizeof(kbm));
+
   return 0;
 }
 #endif
