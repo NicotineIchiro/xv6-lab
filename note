@@ -1,0 +1,7 @@
+Test the function frame regs after the prologue.
+Not at the begin point of function.
+(See the layout src window go through the left bracket.)
+
+
+When dereferencing not-pointer variable(type casting),
+think carefully about the position of bracket.
