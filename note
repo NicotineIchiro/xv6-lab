@@ -5,3 +5,11 @@ Not at the begin point of function.
 
 When dereferencing not-pointer variable(type casting),
 think carefully about the position of bracket.
+
+If should do some jump crossing mode,
+modify the status about pc in trapframe.
+
+Re-new the debug point can be implemeted by:
+  Reading the instruction addr in *.asm,
+	then set it as breakpoint before gdb run,
+	then directly continue.

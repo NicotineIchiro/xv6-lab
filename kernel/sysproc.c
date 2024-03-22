@@ -92,3 +92,40 @@ sys_uptime(void)
   release(&tickslock);
   return xticks;
 }
+
+uint64
+sys_sigalarm(void)
+{
+	int nticks;
+//	void (* handler)();
+	void (* handler)();
+
+	argint(0, &nticks);
+	argaddr(1, (uint64 *)&handler);	
+ 
+
+	//none lock implementation.
+	struct proc *p = myproc();
+	//should do some memory trans from user to kernel.
+	//OR SHOULD GOTO THE HANDLER IN USER SPACE.
+	p->nticks = nticks;
+	p->alarmhdlr = handler;
+
+	return 0;
+}
+
+uint64
+sys_sigreturn(void)
+{
+	struct proc * p = myproc();
+	extern struct trapframe alarmrtf;
+
+	if (p->alarmcalled == 1)
+		p->alarmcalled = 0;
+	if (p->alarmhdlr || p->nticks)
+		*(p->trapframe) = alarmrtf;
+	//p->trapframe->epc = p->alarmrepc + 4;
+	//usertrapret();	
+
+	return 0;
+}

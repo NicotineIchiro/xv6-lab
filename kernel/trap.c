@@ -33,6 +33,7 @@ trapinithart(void)
 // handle an interrupt, exception, or system call from user space.
 // called from trampoline.S
 //
+struct trapframe alarmrtf;
 void
 usertrap(void)
 {
@@ -77,8 +78,24 @@ usertrap(void)
     exit(-1);
 
   // give up the CPU if this is a timer interrupt.
-  if(which_dev == 2)
+  if(which_dev == 2) {
+		if (p->nticks || p->alarmhdlr) {
+			(p->goticks)++;
+			//printf("%d", p->goticks);
+			alarmrtf = *(p->trapframe);	
+			if (!(p->alarmcalled) && (p->goticks % p->nticks == 0)) {
+				//TODO...
+				//printf("test alarm\n");
+				//
+				//asm volatile("mv ra, %0" : : "r" (p->alarmhdlr));
+				p->alarmcalled = 1;
+				p->trapframe->epc = (uint64)p->alarmhdlr;
+				//usertrapret();
+				//some packed reverse trap ops.
+			}
+		}
     yield();
+	}
 
   usertrapret();
 }

@@ -31,7 +31,6 @@ main(int argc, char *argv[])
 }
 
 volatile static int count;
-
 void
 periodic()
 {
@@ -154,6 +153,7 @@ slow_handler()
   }
   for (int i = 0; i < 1000*500000; i++) {
     asm volatile("nop"); // avoid compiler optimizing away loop
+		//printf("%d", i % 10);
   }
   sigalarm(0, 0);
   sigreturn();
